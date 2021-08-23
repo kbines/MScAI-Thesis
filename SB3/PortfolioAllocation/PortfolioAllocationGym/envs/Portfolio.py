@@ -8,6 +8,8 @@ import gym
 from gym import spaces
 from gym.utils import seeding
 
+from sklearn.preprocessing import StandardScaler
+
 import stable_baselines3
 
 from stable_baselines3.common.vec_env import DummyVecEnv, VecMonitor, VecNormalize
@@ -71,7 +73,11 @@ class Env(gym.Env):
             tics = min_df.nlargest(self.sample_size, 'adj_close')['tic']
 
         data = data[data['tic'].isin(tics)]
-
+        #fix nans
+        data['daily_returns'].fillna(0, inplace=True)
+        # normalize tech indicators
+        scaler = StandardScaler()
+        data.iloc[:,7:-1] = scaler.fit_transform(data.iloc[:,7:-1].to_numpy())
         # Index
         data.sort_values(['date', 'tic'], ignore_index=True, inplace=True )
         data.index = data.date.factorize()[0]
@@ -305,6 +311,7 @@ class Env(gym.Env):
 
     def get_sb_env(self):
         venv = DummyVecEnv([lambda: self])
+        venv = VecNormalize(venv, norm_obs=True, norm_reward=True)
         obs = venv.reset()
         venv = VecMonitor(venv)
         return venv, obs
