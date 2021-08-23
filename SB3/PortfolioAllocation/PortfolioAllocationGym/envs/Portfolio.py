@@ -3,22 +3,19 @@ import pandas as pd
 import math
 import random
 
-
 from scipy import stats as scipy_stats
 import gym
 from gym import spaces
 from gym.utils import seeding
 
-
 from sklearn.preprocessing import StandardScaler
 
-import stable_baselines
+import stable_baselines3
 
-from stable_baselines.common.vec_env import DummyVecEnv, VecMonitor, VecNormalize
+from stable_baselines3.common.vec_env import DummyVecEnv, VecMonitor, VecNormalize
 
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
-
 
 class Env(gym.Env):
     metadata = {'render.modes': ['human']}
