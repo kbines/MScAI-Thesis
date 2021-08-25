@@ -1,3 +1,4 @@
+
 import numpy as np
 import pandas as pd
 import math
@@ -9,12 +10,9 @@ import gym
 from gym import spaces
 from gym.utils import seeding
 
-
 from sklearn.preprocessing import StandardScaler
 
-import stable_baselines
-
-from stable_baselines.common.vec_env import DummyVecEnv, VecMonitor, VecNormalize
+from stable_baselines.common.vec_env import DummyVecEnv, VecNormalize
 
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -31,7 +29,7 @@ class Env(gym.Env):
                  investment=1000000,
                  risk_free_rate=0.5,
                  lookback=253,
-                 sample_size=450,
+                 sample_size=100,
                  random_sample=False,
                  report_point=np.iinfo(np.int32).max,  # default is don't report
                  reward_function='daily_returns'):
@@ -60,9 +58,10 @@ class Env(gym.Env):
         # Action space
         self.action_space = spaces.Box(low=0, high=1, shape=(self.portfolio_asset_dim,))
 
-        self.observation_space = spaces.Box(low=-np.inf, high=np.inf,
-                                            shape=(self.state_space, 1, len(self.observation_attributes)),dtype=np.float32)
-        #self.observation_space = spaces.Box(low=-np.inf, high=np.inf,shape=(self.portfolio_asset_dim*len(self.observation_attributes),),dtype=np.float32)
+        #self.observation_space = spaces.Box(low=-np.inf, high=np.inf,
+        #                                    shape=(self.state_space, len(self.observation_attributes)), dtype=np.float32)
+        #                                    shape=(self.state_space, 1, len(self.observation_attributes)),dtype=np.float32)
+        self.observation_space = spaces.Box(low=-np.inf, high=np.inf,shape=(self.portfolio_asset_dim*len(self.observation_attributes),),dtype=np.float32)
 
 
     def data_split(self, data):
@@ -79,8 +78,8 @@ class Env(gym.Env):
         #fix nans
         data['daily_returns'].fillna(0, inplace=True)
         # normalize tech indicators
-        scaler = StandardScaler()
-        data.iloc[:,7:-1] = scaler.fit_transform(data.iloc[:,7:-1].to_numpy())
+        #scaler = StandardScaler()
+        #data.iloc[:,7:-1] = scaler.fit_transform(data.iloc[:,7:-1].to_numpy())
         # Index
         data.sort_values(['date', 'tic'], ignore_index=True, inplace=True )
         data.index = data.date.factorize()[0]
@@ -95,12 +94,12 @@ class Env(gym.Env):
         # resample data
         self.data = self.data_split(self.base_data)
 
-        self.state = self.data.loc[self.day, :][self.observation_attributes].values[:, np.newaxis, :]#.to_numpy(dtype=np.float32).flatten()
+        self.state = self.data.loc[self.day, :][self.observation_attributes].to_numpy(dtype=np.float32).flatten()#.values[:, np.newaxis, :]#.flatten()
         self.portfolio_value = self.investment
 
         self.sharpe = 0
         #self.sortino = 0
-        self.psr = 0
+        #self.psr = 0
 
 
         # init  history
@@ -116,7 +115,7 @@ class Env(gym.Env):
         self.cumulative_returns_history = np.zeros(self.trading_days)
         self.sharpe_history = np.zeros(self.trading_days)
         #self.sortino_history = np.zeros(self.trading_days)
-        self.psr_history = np.zeros(self.trading_days)
+        #self.psr_history = np.zeros(self.trading_days)
         return self.state
 
     def step(self, actions):
@@ -138,10 +137,11 @@ class Env(gym.Env):
                          'cumulative_return_history': self.cumulative_returns_history,
                          'sharpe_history': self.sharpe_history,
                          #'sortino_history': self.sortino_history,
-                         'psr_history': self.psr_history,
+                         #'psr_history': self.psr_history,
                          }
-            # resample data
-            self.data = self.data_split(self.base_data)
+            # resample data if using random samples
+            if self.random_sample:
+                self.data = self.data_split(self.base_data)
 
             return self.state, self.reward, self.terminal, self.info
 
@@ -226,7 +226,7 @@ class Env(gym.Env):
             #self.psr_history[self.day] = self.psr
 
             # Get new state
-            self.state = trade_day[self.observation_attributes].values[:, np.newaxis, :]#.to_numpy(dtype=np.float32).flatten()
+            self.state = trade_day[self.observation_attributes].to_numpy(dtype=np.float32).flatten()#.values[:, np.newaxis, :]#.to_numpy(dtype=np.float32).flatten()
             # Reward functions
             self.reward_functions = {
                 'daily_returns' : self.daily_portfolio_returns,
@@ -302,7 +302,6 @@ class Env(gym.Env):
         print(f'day: {self.day} \
                 reward: {self.reward:.3f} \
                 sharpe: {self.sharpe:.3f}  \
-                psr: {self.psr:.3f}  \
                 cum. rtns: {self.cumulative_returns:,.3f} \
                 portf val: {self.portfolio_value:,.2f}')
 
@@ -316,5 +315,4 @@ class Env(gym.Env):
         venv = DummyVecEnv([lambda: self])
         venv = VecNormalize(venv, norm_obs=True, norm_reward=True)
         obs = venv.reset()
-        venv = VecMonitor(venv)
         return venv, obs

@@ -1,5 +1,4 @@
-from stable_baselines3.common.callbacks import BaseCallback
-
+from stable_baselines.common.callbacks import BaseCallback
 
 class TensorBoardCallback(BaseCallback):
 
@@ -8,10 +7,6 @@ class TensorBoardCallback(BaseCallback):
 
     def _on_step(self) -> bool:
 
-        self.logger.record('Cum. Returns', env.cumulative_returns[-1])
-        self.logger.record('Sharpe', env.sharpe)
-        self.logger.record('Sortino', env.sortino)
-        self.logger.record('Calmar', env.calmar)
-        self.logger.record('PSR', env.psr)
+        self.logger.record('Portfolio Value', env.portfolio_value)
 
         return True

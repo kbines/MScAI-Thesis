@@ -76,8 +76,8 @@ class Env(gym.Env):
         #fix nans
         data['daily_returns'].fillna(0, inplace=True)
         # normalize tech indicators
-        scaler = StandardScaler()
-        data.iloc[:,7:-1] = scaler.fit_transform(data.iloc[:,7:-1].to_numpy())
+        #scaler = StandardScaler()
+        #data.iloc[:,7:-1] = scaler.fit_transform(data.iloc[:,7:-1].to_numpy())
         # Index
         data.sort_values(['date', 'tic'], ignore_index=True, inplace=True )
         data.index = data.date.factorize()[0]
