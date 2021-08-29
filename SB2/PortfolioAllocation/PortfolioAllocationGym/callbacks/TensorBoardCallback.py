@@ -1,4 +1,10 @@
 from stable_baselines.common.callbacks import BaseCallback
+import warnings
+warnings.filterwarnings(action='ignore',
+                        category=DeprecationWarning,
+                        module='stable_baselines')
+warnings.filterwarnings("ignore", category=FutureWarning, module='tensorflow')
+warnings.filterwarnings("ignore", category=UserWarning, module='gym')
 
 class TensorBoardCallback(BaseCallback):
 
