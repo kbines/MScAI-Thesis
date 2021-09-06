@@ -134,12 +134,10 @@ class Env(gym.Env):
         self.holdings_value_history = np.zeros((self.trading_days, self.portfolio_asset_dim))
         self.portfolio_returns_history = np.zeros(self.trading_days)
         self.cash_history = np.zeros(self.trading_days)
-        #self.adj_returns_history = np.zeros(self.trading_days)
         self.cumulative_returns_history = np.zeros(self.trading_days)
         self.sharpe_history = np.zeros(self.trading_days)
-        #self.sortino_history = np.zeros(self.trading_days)
-        #self.psr_history = np.zeros(self.trading_days)
         self.benchmark_history = np.zeros(self.trading_days)
+        self.reward_history = np.zeros(self.trading_days)
 
         return self.state
 
@@ -161,7 +159,8 @@ class Env(gym.Env):
                          'portfolio_returns_history': self.portfolio_returns_history,
                          'benchmark_history': self.benchmark_history,
                          'cumulative_return_history': self.cumulative_returns_history,
-                         'sharpe_history': self.sharpe_history
+                         'sharpe_history': self.sharpe_history,
+                         'reward_history': self.reward_history
                          }
             # resample data if using random samples
             if self.random_sample:
@@ -180,6 +179,7 @@ class Env(gym.Env):
                                 'benchmark_history': self.benchmark_history.tolist(),
                                 'cumulative_return_history': self.cumulative_returns_history.tolist(),
                                 'sharpe_history': self.sharpe_history.tolist(),
+                                'reward_history': self.reward_history.tolist(),
                              }
                 file_name = os.path.join(self.info_dir,self.reward_function+datetime.now().strftime("%m%d-%H%M%S")+'.json')
                 with open(file_name,'w') as file:
@@ -268,6 +268,7 @@ class Env(gym.Env):
             }
 
             self.reward = self.reward_functions.get(self.reward_function)
+            self.reward_history[self.day] = self.reward
 
             if self.day % self.report_point == 0:
                 self.render()
@@ -286,9 +287,9 @@ class Env(gym.Env):
     def render(self, mode='human', close=False):
         #sortino: {self.sortino:.3f}  \
         print(f'day: {self.day} \
-                reward: {self.reward:.3f} \
-                daily_returns: {self.daily_portfolio_returns:.3f} \
-                benchmark: {self.benchmark:.3f} \
+                reward: {self.reward_history.mean():.3f} \
+                daily_returns: {self.portfolio_returns_history.mean():.3f} \
+                benchmark: {self.benchmark_history.mean():.3f} \
                 index : {self.index_return:.3f} \
                 sharpe: {self.sharpe:.3f} \
                 cum. rtns: {self.cumulative_returns:.3f} \

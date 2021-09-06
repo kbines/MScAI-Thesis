@@ -1,0 +1,314 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%        1         2         3         4         5         6         7         8
+% DOCUMENT CLASS
+\documentclass[oneside,12pt]{Classes/RoboticsLaTeX}
+
+% USEFUL PACKAGES
+% Commonly-used packages are included by default.
+% Refer to section "Book - Useful packages" in the class file "Classes/RoboticsLaTeX.cls" for the complete list.
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{multirow}
+\usepackage{colortbl}
+\usepackage{color}
+\usepackage[table]{xcolor}
+\usepackage{epigraph}
+\usepackage{graphicx}
+%\usepackage{subfigure}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{longtable}
+\usepackage[pdftex]{graphicx}
+\usepackage{pdfpages}
+%\usepackage{tabularx}
+\usepackage{pdflscape}
+\usepackage[acronym,toc]{glossaries}
+\usepackage{setspace}
+\usepackage[utf8]{inputenc}
+\usepackage[table]{xcolor}
+\setstretch{1.5}
+%\onehalfspacing
+% SPECIAL COMMANDS
+% correct bad hyphenation
+\hyphenation{op-tical net-works semi-conduc-tor}
+\hyphenation{par-ti-cu-lar mo-du-le ge-stu-re}
+% INTERLINEA 1.5
+%\renewcommand{\baselinestretch}{1.5}
+
+%% ignore slightly overfull and underfull boxes
+%\hbadness=10000
+%\hfuzz=50pt
+% declare commonly used operators
+%\DeclareMathOperator*{\argmax}{argmax}
+
+% HEADER
+\title{\Large{Deep Reinforcement Learning for Portfolio Allocation
+Using Synchronous Advantage Actor Critic and Long Short Term Memory }}
+
+  \author{Keith Bines (19234297) 
+  BSc (Hons) Computer Information Systems Design}
+  \collegeordept{School of Computer Science}
+  \university{National University of Ireland Galway}
+  \crest{\includegraphics[width=75mm]{Figures/logo_NUI.png}}
+
+\supervisor{Dr Enda Barrett}
+%\supervisor{Name of the Supervisor}
+%\supervisor{Name of the Co-Supervisor}	
+% \supervisor{Dr. Jane Smith}
+% \supervisorSecond{Dr. Mihael Arcan}
+% text before "In partial fulfillment of the requirements for the degree of" in .cls file/line 153\
+% replace PROGRAMME with "Data Analytics", "Artificial Intelligence", or "Artificial Intelligence - Online"
+\degree{MSc in Computer Science (Artificial Intelligence - Online)}
+\degreedate{ September 2021 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% uncomment if glossary needed, see examples in file
+%\makeglossaries
+%\loadglsentries{glossary}
+
+\begin{document}
+\begin{spacing}{1}
+\maketitle
+\end{spacing}
+
+% add an empty page after title page
+%\newpage\null\thispagestyle{empty}\newpage
+
+% set the number of sectioning levels that get number and appear in the contents
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\frontmatter
+% replace PROGRAMME with Data Analytics, Artificial Intelligence, or Artificial Intelligence - Online
+\textbf{DECLARATION} 
+I, KEITH BINES, do hereby declare that this thesis entitled "Deep Reinforcement Learning for Portfolio Allocation Using Synchronous Advantage Actor Critic (A2C) and Long Short Term Memory (LSTM)" is a bonafide record of research work done by me for the award of MSc in Computer Science (Artificial Intelligence - Online) from National University of Ireland Galway. It has not been previously submitted, in part or whole, to any university or institution for any degree, diploma, or other qualification. 
+\newline
+
+\begin{tabular}{@{}p{.5in}p{4in}@{}}
+Signature: & ~~\hrulefill \\
+\end{tabular}
+\newpage
+
+
+%%%% uncomment if acknowledgements needed
+\textbf{Acknowledgement}
+I would like to sincerely thank my supervisor, Dr Enda Barrett, for his support and guidance throughout this project. I would also like to thank my wife Bridget, my family and colleagues who have supported and encouraged me throughout the two years whilst studying for this Masters.
+
+The S\&P 500 data was kindly provided by S\&P Dow Jones Indices under an academic license.
+
+% THESIS ABSTRACT
+\begin{abstracts}
+The allocation of funds to the assets of a portfolio involves both the prediction of asset performance and managing the associated risk reward ratio. In this study, an approach is proposed to use Deep Reinforcement Learning (DRL) to optimize the allocation of funds to assets.
+
+The approach uses an Advantage Actor Critic (A2C) policy for its computational efficiency and  Long Short Term Memory (LSTM) for its ability to minimize the vanishing gradient effect inherent when using times-series data.
+
+The objective function is the excess returns over the S\&P 500. The S\&P 500 indexes the returns of the largest five hundred US stocks by market capitalization and is an indicator of US stock market performance. Using excess returns allows for rewards to be effectively attributed to  the learned policy regardless of market conditions.
+
+Historical US stock market data from the period 2008 to 2017 is used for training the policy which is then tested against data for 2018 to 2019.
+
+The study is not an attempt to create an investment strategy that readers could use profitably, but is an investigation into the practicality of using the approach.
+
+
+\textbf{Keywords: } Deep Reinforcement Learning, Artificial Intelligence, Actor Critic, A2C, LSTM, Portfolio Allocation
+\end{abstracts}
+
+
+\tableofcontents
+\listoffigures
+\listoftables
+\printglossary[title=List of Acronyms,type=\acronymtype]
+
+\mainmatter
+
+\chapter{Introduction}
+\label{chap:introduction}
+Portfolio management strategies are still largely based on economic theories developed in the 1950s and ’60s and according to \citet{LiBin2014OpsA} can be divided into “two major schools for investigating this problem”, “the mean-variance theory” and the “the Capital Growth Theory”
+
+Mean-Variance approaches focus on the problem of portfolio selection and optimization in the following seminal works
+\begin{itemize}
+\item The Modern Portfolio Management Theory and the Efficient Portfolio as described by Harry Markowitz in the paper “Portfolio Selection” \citep{MarkowitzHarry1952PS}
+\end{itemize}
+
+\begin{itemize}
+\item The Modigliani-Miller Theorem as described by Franco Modigliani and Merton H Millar in the paper “The Cost of Capital, Corporation Finance and the Theory of Investment” \citep{FrancoModigliani1958TCoC}
+\end{itemize}
+
+\begin{itemize}
+\item The Capital Asset Pricing Model as described by William F. Sharpe in the paper “Capital Asset Prices: A Theory of Market Equilibrium under Conditions of Risk” \citep{Sharpe49}
+\end{itemize}
+
+Capital Growth Theory and the Kelly Criterion focus on the exact value of funds that should be invested in each trade as described by J. Kelly Jr. in the paper “A New Interpretation of Information Rate” \citep{KellyJ1956Anio}
+
+Mean-Variance approaches are underpinned by the statistical and quantitative methods of Econometrics.  Econometrics, as a term, “appears to have been first used by Pawel Ciompa as early as 1910; although it is Ragnar Frisch, one of the founders of the Econometric Society, who should be given the credit for coining the term, and for establishing it as a subject in the sense in which it is known today“ \citep[p.1]{PES90}
+
+The “Fintech Revolution” (Gomber, et al., 2018), is a potential disruptor for the Financial Service Industry, and “The fundamental difference today is the new abundance of data, the increasing maturity of the data infrastructures and integrated systems that have been deployed to process it, as well as the emergence of pattern recognition, data mining, machine learning (ML), and other digital-sensing tools in the financial services environment that can utilize it.” (Gomber, et al., 2018, p. 227)
+
+\chapter{Background}
+\label{chap:backg}
+The following is a brief overview of the Portfolio Management process and key terms summarized from \citet{BakerH.Kent2013PTaM}.
+
+According to \citet{BakerH.Kent2013PTaM} Portfolio management consists of the following three “major steps” and “tasks”
+\begin{enumerate}
+\item Planning \citep[p.2]{BakerH.Kent2013PTaM}
+    \begin{enumerate}
+    \item Analyzing the investors “needs, circumstances and constraints”
+    \item Articulating these as a formal “investment policy statement (IPS)”
+    \item Defining a strategy that aims to meet the goals and stay within the constraints and risk preferences of the investor as specified in the IPS. This strategy is referred to as the “Strategic Asset Allocation or SAA”. 
+    \item Identifying a benchmark to evaluate the performance of the portfolio. A benchmark consists of one or more publicly available or vendor-provided financial indices.  For example, the S\&P500 or the FTSE 100 are publicly available general indices and vendors such as Barclays, Morning Star or Russell will supply specialist indices to track specific sectors, geographies, themes and investment styles.
+    \end{enumerate}
+\item Execution or Construction \citep[p.2-3]{BakerH.Kent2013PTaM}
+    \begin{enumerate}
+    \item “Analyzing the risk-and-return characteristics of asset classes” where an asset class is a classification of a financial instrument.  For example, equities (stocks and shares), fixed income or bonds, cash or cash equivalents, commodities and real estate. These may be further broken down e.g. US Equity, US Emerging Markets, UK Real Estate Investment Trusts, Metals, Oils, Agricultural Products, Japanese High-Tech Equities, US Government Bonds etc.  The IPS will specify the mix of asset classes and the allocation of fund assets to each asset class. An allowable margin to gain from favourable market conditions or protect against unfavourable market conditions will be specified. The margins or “active weight constraints” are referred to as the “Tactical Asset Allocation or TAA”
+    \item Market condition analysis. The analysis will include not just the current market conditions but projected conditions and the risk of those conditions changing favourably or unfavourably across the lifespan of the portfolio. 
+    \item Selecting individual securities within the identified asset class that meet the aims, constraints and risk profile of the IPS. The choice of securities will depend on the broad investment strategy, “Active” or “Passive”. Active management is where the Portfolio Manager will pick securities based on research and analysis and will try to achieve greater returns than the performance benchmark. Passive management is where the Portfolio Manager will replicate the securities in the performance benchmark to achieve the same returns.
+    \end{enumerate}
+\item Feedback \citep[p.3]{BakerH.Kent2013PTaM}
+    \begin{enumerate}
+    \item Monitoring the investors “needs, circumstances and constraints”. For fund targeted towards consistent returns, this could be periodic reviews with the investor or in funds with a maturity date then the IPS may define how the asset class and risk profile will vary as the fund matures.
+    \item Monitoring market conditions and adjusting the TAA to maximize gains and minimize loss.
+    \item “Rebalancing” the portfolio.  Macro and micro changes such as global, national and sector market conditions and individual securities performance will all result in a “drift” of the portfolio’s current asset allocation from the SAA and the performance benchmark.  Periodically the Portfolio Manager will need to trade assets within the portfolio to bring it back in line with the SAA and the active weight constraints of the TAA.  Also, fund inflows and outflows will require a rebalancing of the asset allocations.
+    \end{enumerate}
+\end{enumerate}
+
+Portfolio Management strategies have been classified into the following four groups by \citet{LiBin2014OpsA} .  The following is a brief synopsis of these classifications.
+\begin{enumerate}
+\item Benchmarks \citep[7-9]{LiBin2014OpsA} assets are allocated to a pool of assets and will be constantly rebalanced against a performance benchmark. This can be considered the base approach and other approaches and strategies build on this.
+\item Follow the Winner \citep[9-15]{LiBin2014OpsA}the asset allocation weights of the best-performing instruments will be increased on the assumption that the best-performing instruments will continue to outperform other instruments given the same market conditions.
+\item Follow the Loser \citep[15-19]{LiBin2014OpsA} asset allocation is transferred away from the best-performing instruments towards the poorer performing instruments. The assumption is that the best-performing instruments have limited further returns and the poorer performing instrument will provide better returns on the transferred funds.
+\item Pattern-Matching-Based \citep[19-22]{LiBin2014OpsA} consists of two-phase “Sample Selection” and “Portfolio Optimization”. In the first phase, a sample of historical prices are selected, and the preferred algorithm is applied to assign a probability of returns.  The second phase is to “learn an optimal portfolio based on the similarity of the set obtained in the first step”
+\item Meta-Learning Algorithms \citep[22-24]{LiBin2014OpsA} apply to Fund of Funds portfolio’s i.e. a  portfolio that does not directly hold any instrument itself but instead allocates assets to Funds that specialize in a specific asset class. For each fund, MLA will require a probability of returns for the next period.  These are combined to form or rebalance the Fund of Fund portfolio. Each fund may use a different strategy and MLA can be used to smooth the performance of a Fund of Fund portfolio.
+\end{enumerate}
+
+\chapter{Related Work}
+\label{chap:rel_work}
+\section{Research Methods}
+The literature for this paper was found via the following methods
+\begin{itemize}
+\item Online searches performed via the NUIG Library, Scopus and Scholar.
+    \begin{itemize}
+    \item Keywords include used singularly or in combination: Reinforcement Learning, Portfolio Management, Fintech, Investment, Trading Systems, Econometrics, Quantitative Finance.
+    \item Filtering was performed using citation count, the relevance of the title and article abstracts, the date of publication, the citation counts of the authors, the count of article by the authors along with key metrics provided by each tool.
+    \end{itemize}
+\item Reviewing Journals found in JSTOR and Scimago.
+\item The following books were reviewed, and material referenced in each book cross-referenced with or added to the list from the online searches
+    \begin{itemize}
+    \item “Portfolio Theory and Management : An Overview” \citep{BakerH.Kent2013PTaM}
+    \item “Online Portfolio Selection: Principles and Algorithms” \citep{LiBin2016OPSP}
+    \item "Reinforcement Learning : An Introduction" \citep{SuttonRichardS.2018Rl:a}
+    \item "Deep reinforcement Learning Hands-On " \citep{LapanMaxim2020Drlh}
+    \item "Deep Learning with Python" \citep{CholletF2018DlwP}
+    \item "Deep Learning" \citep{GoodfellowIan2016Dl}
+    \item "Machine Learning in Finance: From Theory to Practice" \citep{DixonMatthewF2020MLiF}
+    \item "Advances in Financial Machine Learning" \citep{dePradoMarcos2018AiFM}
+\end{itemize}
+
+\section{Deep Reinforcement Learning (DRL)  – Uses in Portfolio Management}
+\subsection{DRL Approaches}
+The following papers are addressed chronologically. The list is not a comprehensive set of all research in the field but is a representative set of DRL approaches relevant to portfolio management. A survey of portfolio selection techniques, not limited to reinforcement learning, was published in the paper  \citet{LiBin2014OpsA} and this along with the book by the same authors \citet{LiBin2016OPSP} have been used a reference for this review
+
+\citet{MoodyJohn1998Pfar} used recurrent reinforcement learning (RRL) algorithms. They also use the term “performance function” as a portfolio selection specific usage of the more general reinforcement learning “value function”. The performance functions used are “profit or wealth, economic utility, the Sharpe ratio and our proposed differential Sharpe ratio” \citep[p1]{MoodyJohn1998Pfar}. The Sharpe Ratio was a term that arose from William Sharpe’s paper \citep{SharpeWilliamF1964CAPA} but Sharpe went on to specifically describe it in the paper \citep{Sharpe94}. 
+
+ Moody et al, used the S\&P 500/T-Bill index as the benchmark for their simulation results for a 25-year period from 1970 to 1994.  In the conclusion they summarize the use of recurrent reinforcement learning as follows “Reinforcement learning algorithms find approximate solutions to stochastic dynamic programming problems and are able to do so on-line. Although it is possible to train the systems off-line using batch learning, we favour on-line reinforcement learning, as it is more efficient computationally. The learning algorithms we use are thus stochastic optimization methods. We utilize a simple but unique recurrent reinforcement learning (RRL) algorithm based on real-time recurrent learning (RTRL) that maximizes immediate rewards in an on-line mode” (Moody, et al., 1998, p. 466). They also claim that the RRL approach “provides more stable results and higher profits and Sharpe ratios than does the Q-Learning algorithm for the 25-year out-of-sample period for the S&P 500/TBill asset-allocation system.” \citep[467]{MoodyJohn1998Pfar}
+ 
+Moody further builds on this in conjunction with Matthew Saffell in the paper \citet{MoodyJ2001Lttv}.  RRL is again used and “The need to build forecasting models is eliminated, and better trading performance is obtained. The direct reinforcement approach differs from dynamic programming and reinforcement algorithms such as TD-learning and Q-learning, which attempt to estimate a value function for the control problem. We find that the RRL direct reinforcement framework enables a simpler problem representation, avoids Bellman’s curse of dimensionality and offers compelling advantages in efficiency.” \citep[p875]{MoodyJ2001Lttv}. In the conclusion they find that an RRL approach outperforms Q-Learning “In this paper, we have compared the DR approach using RRL to the Q-learning value function method. We find that an RRL-Trader achieves better performance than a Q-Trader for the S\&P 500/T-Bill asset allocation problem” 
+
+\citet{JiangZhengyao2017ADRL} presents a “financial-model-free Reinforcement Learning framework to provide a deep machine learning solution to the portfolio management problem “ \citep[p1]{JiangZhengyao2017ADRL} . They refer to the \citet{MoodyJohn1998Pfar} and \citet{MoodyJ2001Lttv} work and others and state “These RL algorithms output discrete trading signals on an asset. Being limited to single-asset trading, they are not applicable to general portfolio management problems, where trading agents manage multiple assets.” \citep[p.2]{JiangZhengyao2017ADRL}.
+
+They propose “an RL framework specially designed for the task of portfolio management. The core of the framework is the Ensemble of Identical Independent Evaluators (EIIE) topology. An IIE is a neural network whose job is to inspect the history of an asset and evaluate its potential growth for the immediate future.” The framework was tested using the polonix.com cryptocurrency exchange against three types of IIE, Convolutional Neural Network (CNN), Recurrent Neural Network (RNN) and Long Short Term Memory (LSTM) \citep[p.3]{JiangZhengyao2017ADRL}.
+
+In the conclusion they state “The profitability of the framework surpasses all surveyed traditional portfolio-selection methods, as demonstrated in the paper by the outcomes of three back-test experiments over different periods in a cryptocurrency market. In these experiments, the framework was realized using three different underlining networks, a CNN, a basic RNN and a LSTM. All three versions better performed in final accumulated portfolio value than other trading algorithms in comparison.” \citep[p.20]{JiangZhengyao2017ADRL}. In comparing the three IIE’s they state “LSTM had much lower scores than the CNN and the basic RNN. The significant gap in performance between the two RNN species under the same framework might be an indicator of the well-known secret in financial markets, that history repeats itself. Not being designed to forget its input history, a vanilla RNN is more able than a LSTM to exploit repetitive patterns in price movement for higher yields.” 
+
+They also point out that there is room for improvement especially with regard to the volume of real-world trading examples “The main weakness of the current work is the assumptions of zero market impact and zero slippage. In order to consider market impact and slippage, large amount of well-documented real-world trading examples will be needed as training data”
+
+In the paper \citet{ALMAHDI2017267} again build on the work of \citet{MoodyJohn1998Pfar} and \citet{MoodyJ2001Lttv}. They apply the “recurrent reinforcement learning (RRL) method with a statistically coherent downside risk-adjusted performance objective function to simultaneously generate both buy/sell signals and optimal asset allocation weights.” \citep[p267]{ALMAHDI2017267}. They point out that although \citet{MoodyJohn1998Pfar} and others discuss potential drawdown effects no study. of the effects have been performed. To counter this they proposed to use “expected maximum drawdown E(MDD)” \citep[p267]{ALMAHDI2017267} as the performance function in place of the differentiated Sharpe Ratio used by \citet{MoodyJohn1998Pfar}.  They also constructed “five asset portfolio using five of the most commonly traded exchange-traded funds from different asset categories. These assets (identified by their ticker symbols and fund names) are as follows: \citep[p271]{ALMAHDI2017267}.
+\begin{itemize}
+\item IWD: iShares Russell 10 0 0 Value 
+\item IWC: iShares Micro-Cap 
+\item SPY: SPDR S&P 500 ETF 
+\item DEM: WisdomTree Emerging Markets High Dividend 
+\item CLY: iShares 10+ Year Credit Bond
+\end{itemize}
+
+ In the conclusion they find “a) variable weight long/short portfolios outperform the equally weighted long/short portfolios; b) the RRL Calmar ratio based portfolios outperform the RRL Sharpe ratio based portfolios consistently; c) the E(MDD) RRL based trading system with market condition stop-loss retraining responds to transaction cost effects better and outperforms hedge fund benchmarks consistently.” \citep[p279]{ALMAHDI2017267} and that “using RRL with the expected maximum drawdown based Calmar ratio results in a significantly superior performance and are more transaction cost resilient than the portfolios constructed with the Sharpe ratio.” \citep[p279]{ALMAHDI2017267}
+ 
+In a more recent paper \citet{ABOUSSALAH2020112891} the work of \citet{MoodyJohn1998Pfar} is again used as a baseline and “To address the challenge of continuous action and multi-dimensional state spaces, we propose the so called Stacked Deep Dynamic Recurrent Reinforcement Learning (SDDRRL) architecture to construct a real-time optimal portfolio.” \citep[p1]{ABOUSSALAH2020112891}. The Sharpe Ratio is used as the performance value and in addition, the authors used a hyperparameter tuning method given the sensitivity of machine learning algorithms to the hyperparameter settings “Therefore, we equipped SDDRRL with the ability to find the best possible architecture topology using an automated Gaussian Process ( GP ) with Expected Improvement ( EI ) as an acquisition function. This allows us to select the best architectures that maximize the total return while respecting the cardinality constraints.” \citep[p1]{ABOUSSALAH2020112891}. The model was tested against a set of stock from the S\&P500 from January 1st 2013 to July 31st 2017.
+
+The authors do not compare the performance of the notional investment to previous works but do state that “The optimized number of time-stacks was found to be approximately equal to 5 or 6, leading to annualized returns around 20% throughout our testing period. However, the size of the training and testing windows should be optimized and was left for future work.” \citep[p10]{ABOUSSALAH2020112891}.
+
+They also state that “different policy neural network architectures have different investment strategies over the same period of time, which could be interpreted as having five different portfolio management experts. By aggregating the decisions coming from these experts, we can be more robust in the face of market fluctuations.” \citep[p12]{ABOUSSALAH2020112891}. They suggested future work for “aggregating the decisions” through the use of either ensemble methods e.g. Bagging, Boosting or possibly the Multi-Armed Bandit approach.
+
+In the paper \citep{BaileyDavidH2012Tsre} the authors propose an variation of the Sharpe Ratio, the “Probablistic Sharpe Ratio” \citep[p.3]{BaileyDavidH2012Tsre} Or PSR. They argue that “Sharpe ratio is a deficient measure of investment skill” and that “non-Normality may increase the variance of the Sharpe ratio estimator, therefore reducing our confidence in its point estimate” \citet[p.4]{BaileyDavidH2012Tsre}. The PSR attempts to address the deficiencies of the Sharpe Ratio under non-Normal conditions by a identifying a the length of the track record that best reflect the portfolio performance. The conclude “despite Sharpe ratio’s well-documented deficiencies, it can still provide evidence of investment skill, as long as the user learns to require the proper track record length.” \citep[p.15]{BaileyDavidH2012Tsre}
+
+\subsection{Goal Based Inverse Reinforcement Learning}
+A completely different approach is discussed in Chapter 11 of \citet{DixonMatthewF2020MLiF} and also in the paper \citet{dixon2020glearner}. The approach is goal based and referred to by the authors as a G-Learner. The G-Learner is combined with inverse reinforcement learning. Inverse reinforcement learning does not observe the reward but instead seeks to learn a reward function based on the behaviour of the agent and derive the optimal policy. The resulting algorithm is referred to by the authors as "GIRL (G-learning IRL)" \citep[p5-18]{dixon2020glearner}. This approach involves no deep learning, so although very interesting, was not used in this study as Deep Reinforcement Learning is a personal learning objective of this thesis.                                                                                                    
+
+\subsection{FinRL - DRL for Finance}
+FinRL is described in the paper \citet{finrl2020}. The library aims to provide a "library that streamlines the development stock trading strategies. FinRL provides common building blocks that allow strategy builders to configure stock market datasets as virtual environments, to train deep neural networks as trading agents, to analyze trading performance via extensive backtesting, and to incorporate important market frictions." \citet[p.2]{finrl2020}
+
+This library was not directly used in this study, as it is based on the library Stable-Baseline3 \citep{stable-baselines3} which does not support LTSM or recurrent policies for any of the supported agents.
+
+\chapter{Data}
+\label{chap:data}
+\section{Source Data}
+
+\section{Data Preparation}
+
+
+\chapter{Methodology}
+\label{chap:methodology}
+Overview
+\section{Model Construction}
+\subsection{Reward Function Selection}
+
+\subsection{Environment}
+
+
+\subsection{Agent and Policy}
+
+\chapter{Experimental Settings}
+\label{chap:experimental}
+
+\section{Hyperparameter Tuning}
+
+\section{Model Training}
+
+\section{Model Testing}
+
+
+
+\chapter{Results}
+\label{chap:resutls}
+
+
+Results first, using figures and tables, with little commentary and no interpretation.
+
+Then analysis and interpretation. Statistical tests are typically required to support claims such as superiority of one algorithm over another.
+
+\chapter{Conclusion}
+\label{chap:conclusion}
+
+Here you must zoom back out to evaluate the thesis. Mention limitations and weaknesses as well as contributions and significance.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{plainnat}                  % to give author-year style
+\renewcommand{\bibname}{References}           % change default name Bibliography to References
+\bibliography{references}                     % References file, references.bib
+\addcontentsline{toc}{chapter}{References}    % add References to TOC
+
+
+%%% uncomment if Appendix needed
+%\appendix
+%\chapter{Appendix-A-Title} 
+%\label{chap:appendix_a}
+
+%\chapter{Appendix-B-Title} 
+%\label{chap:appendix_b}
+
+
+\end{document}
