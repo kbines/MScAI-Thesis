@@ -260,10 +260,8 @@ class Env(gym.Env):
             self.state = trade_day[self.observation_attributes].to_numpy(dtype=np.float32).flatten()#.values[:, np.newaxis, :]#.to_numpy(dtype=np.float32).flatten()
             # Reward functions
             self.reward_functions = {
-                'daily_returns' : self.daily_portfolio_returns,
                 'benchmark' : self.benchmark,
-                'cum_returns': self.cumulative_returns,
-                'portfolio_value': self.portfolio_value,
+                'benchmark_mean': self.benchmark_history.mean(),
                 'sharpe': self.sharpe
             }
 
@@ -276,26 +274,20 @@ class Env(gym.Env):
         return self.state, self.reward, self.terminal,{}
 
     def get_sharpe(self):
-        # https://www.investopedia.com/terms/s/sharperatio.asp
         std = self.portfolio_returns_history[self.lookback_day:self.day].std()
-        base_value = self.portfolio_value_history[self.lookback_day]
-        #current_returns = (self.portfolio_value - base_value) / base_value * 100 if base_value > 0 else 0
-        #sharpe = (current_returns - self.effective_rfr) / std if std > 0 else 0
         sharpe = (self.portfolio_returns_history.mean() - self.effective_rfr) / std if std > 0 else 0
         return sharpe * 100
 
     def render(self, mode='human', close=False):
         #sortino: {self.sortino:.3f}  \
         print(f'day: {self.day} \
-                reward: {self.reward_history.mean():.3f} \
-                daily_returns: {self.portfolio_returns_history.mean():.3f} \
-                benchmark: {self.benchmark_history.mean():.3f} \
-                index : {self.index_return:.3f} \
                 sharpe: {self.sharpe:.3f} \
+                index : {self.index_return:.3f} \
+                excess mean: {self.benchmark_history.mean():.3f} \
                 cum. rtns: {self.cumulative_returns:.3f} \
                 portf val: {self.portfolio_value:,.2f}')
 
-        return self.state
+        #return self.state
 
     def _seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
