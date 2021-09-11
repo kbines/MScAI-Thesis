@@ -262,6 +262,26 @@ issn = {0022-1082},
       archivePrefix={arXiv},
       primaryClass={cs.LG}
 }
+@misc{YuhuaiWu17a2c,
+  author = {Yuhuai Wu and Elman Mansimov and Shun Liao and Alec Radford and John Schulman},
+  title = {ACKTR \& A2C},
+  year = {2017},
+  month = {August},
+  day = {18},
+  publisher = {OpenAI Baselines},
+  journal = {GitHub repository},   
+  howpublished = {\url{https://openai.com/blog/baselines-acktr-a2c/}},
+  note={Accessed: 2021-08-01},
+}
+
+@phdthesis{ChrisWatkins89,
+  author       = {Watkins, Christopher John Cornish Hellaby}, 
+  title        = {Learning from delayed rewards.},
+  school       = {University of Cambridge},
+  year         = 1989,
+  address      = {Cambridge England},
+}
+
 @article{Hochreiter1997,
 author = {Hochreiter, Sepp and Schmidhuber, Jürgen},
 year = {1997},
@@ -292,11 +312,76 @@ title = {Reinforcement learning : an introduction},
 edition = {Second edition.},
 language = {eng},
 address = {Cambridge, Massachusetts},
-author = {Sutton, Richard S.},
+author = {Sutton, Richard S. and Barto,Andrew G.},
 keywords = {Reinforcement learning; Electronic books},
 series = {Adaptive computation and machine learning series},
 abstract = {"Reinforcement learning, one of the most active research areas in artificial intelligence, is a computational approach to learning whereby an agent tries to maximize the total amount of reward it receives while interacting with a complex, uncertain environment. In Reinforcement Learning, Richard Sutton and Andrew Barto provide a clear and simple account of the field's key ideas and algorithms."--},
 }
+
+@book{SuttonRichardS1998Rl:a,
+publisher = {MIT Press},
+isbn = {0262193981},
+year = {1998},
+title = {Reinforcement learning : an introduction},
+language = {eng},
+address = {Cambridge, Mass. ; London},
+author = {Sutton, Richard S. and Barto,Andrew G.},
+keywords = {Reinforcement learning (Machine learning)},
+lccn = {97026416},
+series = {Adaptive computation and machine learning},
+abstract = {Reinforcement learning, one of the most active research areas in artificial intelligence, is a computational approach to learning whereby an agent tries to maximize the total amount of reward it receives when interacting with a complex, uncertain environment. In Reinforcement Learning, Richard Sutton and Andrew Barto provide a clear and simple account of the key ideas and algorithms of reinforcement learning. Their discussion ranges from the history of the field's intellectual foundations to the most recent developments and applications. The only necessary mathematical background is familiarity with elementary concepts of probability.The book is divided into three parts. Part I defines the reinforcement learning problem in terms of Markov decision processes. Part II provides basic solution methods: dynamic programming, Monte Carlo methods, and temporal-difference learning. Part III presents a unified view of the solution methods and incorporates artificial neural networks, eligibility traces, and planning; the two final chapters present case studies and consider the future of reinforcement learning.},
+}
+@article{GersFelixA2000LtFC,
+journal = {Neural computation},
+pages = {2451--2471},
+volume = {12},
+publisher = {MIT Press},
+number = {10},
+year = {2000},
+title = {Learning to Forget: Continual Prediction with LSTM},
+copyright = {2000 Massachusetts Institute of Technology},
+language = {eng},
+address = {CAMBRIDGE},
+author = {Gers, Felix A and Schmidhuber, Jürgen and Cummins, Fred},
+keywords = {Algorithms ; Applied sciences ; Artificial intelligence ; Computer Science ; Computer Science, Artificial Intelligence ; Computer science; control theory; systems ; Exact sciences and technology ; Life Sciences & Biomedicine ; Memory, Short-Term ; Neural Networks (Computer) ; Neurosciences ; Neurosciences & Neurology ; Nonlinear Dynamics ; Pattern recognition. Digital image processing. Computational geometry ; Science & Technology ; Technology},
+issn = {1530-888X},
+abstract = {Long short-term memory (LSTM; Hochreiter & Schmidhuber, 1997) can solve numerous tasks not solvable by previous learning algorithms for recurrent neural networks (RNNs). We identify a weakness of LSTM networks processing continual input streams that are not a priori segmented into subsequences with explicitly marked ends at which the network's internal state could be reset. Without resets, the state may grow indefinitely and eventually cause the network to break down. Our remedy is a novel, adaptive "forget gate" that enables an LSTM cell to learn to reset itself at appropriate times, thus releasing internal resources. We review illustrative benchmark problems on which standard LSTM outperforms other RNN algorithms. All algorithms (including LSTM) fail to solve continual versions of these problems. LSTM with forget gates, however, easily solves them, and in an elegant way.},
+}
+
+@article{HochreiterSepp1997LSM,
+journal = {Neural computation},
+pages = {1735--1780},
+volume = {9},
+publisher = {MIT Press},
+number = {8},
+year = {1997},
+title = {Long Short-Term Memory},
+copyright = {1997 Massachusetts Institute of Technology},
+language = {eng},
+address = {CAMBRIDGE},
+author = {Hochreiter, Sepp and Schmidhuber, Jürgen},
+keywords = {Algorithmics. Computability. Computer arithmetics ; Algorithms ; Applied sciences ; Artificial intelligence ; Computer Science ; Computer Science, Artificial Intelligence ; Computer science; control theory; systems ; Connectionism. Neural networks ; Exact sciences and technology ; Learning ; Life Sciences & Biomedicine ; Memory ; Memory, Short-Term ; Models, Neurological ; Models, Psychological ; Nerve Net - physiology ; Neural Networks (Computer) ; Neurosciences ; Neurosciences & Neurology ; Science & Technology ; Technology ; Theoretical computing ; Time Factors},
+issn = {1530-888X},
+abstract = {Learning to store information over extended time intervals by recurrent backpropagation takes a very long time, mostly because of insufficient, decaying error backflow. We briefly review Hochreiter's (1991) analysis of this problem, then address it by introducing a novel, efficient, gradient based method called long short-term memory (LSTM). Truncating the gradient where this does not do harm, LSTM can learn to bridge minimal time lags in excess of 1000 discrete-time steps by enforcing constant error flow through constant error carousels within special units. Multiplicative gate units learn to open and close access to the constant error flow. LSTM is local in space and time; its computational complexity per time step and weight is
+O
+. 1. Our experiments with artificial data involve local, distributed, real-valued, and noisy pattern representations. In comparisons with real-time recurrent learning, back propagation through time, recurrent cascade correlation, Elman nets, and neural sequence chunking, LSTM leads to many more successful runs, and learns much faster. LSTM also solves complex, artificial long-time-lag tasks that have never been solved by previous recurrent network algorithms.},
+}
+
+
+
+@article{RumelhartDavidE1986Lrbb,
+journal = {Nature},
+pages = {533--536},
+volume = {323},
+publisher = {Nature Pub Group},
+number = {6088},
+year = {1986},
+title = {Learning representations by back-propagating errors},
+address = {[London] :},
+author = {Rumelhart, David E and Hinton, Geoffrey E and Williams, Ronald J},
+issn = {0028-0836},
+}
+
 @book{LapanMaxim2020Drlh,
 publisher = {Packt Publishing},
 isbn = {9781838820046},
@@ -386,6 +471,30 @@ abstract = {We evaluate the probability that an estimated Sharpe ratio will exce
       archivePrefix={arXiv},
       primaryClass={q-fin.PM}
 }
+@misc{45500,
+title	= {Understanding LSTM Networks},
+author	= {Christopher Olah},
+year	= {2015},
+URL	= {http://colah.github.io/posts/2015-08-Understanding-LSTMs/}
+}
+
+@misc{1606.01540,
+  Author = {Greg Brockman and Vicki Cheung and Ludwig Pettersson and Jonas Schneider and John Schulman and Jie Tang and Wojciech Zaremba},
+  Title = {OpenAI Gym},
+  Year = {2016},
+  Eprint = {arXiv:1606.01540},
+}
+
+
+@misc{KeithBinesThesis2021,
+  author = {Bines, Keith},
+  title = {POrtfolio Allocation Source Code},
+  year = {2021},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/kbines/MScAI-Thesis}},
+}
+
 @misc{SP500Overview,
     title={S&P 500 Overview},
     author={Global, S&P},
@@ -393,3 +502,57 @@ abstract = {We evaluate the probability that an estimated Sharpe ratio will exce
     howpublished ={\url{https://www.spglobal.com/spdji/en/indices/equity/sp-500/#overview}},
     note={Accessed: 2021-08-08},
 }
+
+@misc{KeithBinesRLZoo2021,
+  author = {Bines, Keith},
+  title = {Portfolio Allocation Hyperparmater tuning},
+  year = {2021},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/kbines/rl-baselines-zoo}},
+}
+
+@misc{YahooFinance,
+  author = {Finance Yahoo},
+  title = {Yahoo Finance},
+  year = {2021},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://finance.yahoo.com/}},
+  note={Accessed: 2021-05-21},
+}
+
+@misc{Ranaroussi2019,
+  author = {Ran Aroussi},
+  title = {Portfolio Allocation Hyperparmater tuning},
+  year = {2019},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/ranaroussi/yfinance}},
+  note={Accessed: 2021-05-21},
+}
+
+@misc{SimFin2020,
+  author = {SimFin},
+  title = {SimFin},
+  year = {2020},
+  publisher = {SimFin},
+  howpublished = {\url{https://simfin.com/data/bulk}},
+  note={Accessed: 2021-05-21},
+}
+
+@article{WilliamsRonaldJ1992Ssga,
+journal = {Machine learning},
+pages = {229--256},
+volume = {8},
+number = {3},
+year = {1992},
+title = {Simple statistical gradient-following algorithms for connectionist reinforcement learning},
+copyright = {Copyright 2017 Elsevier B.V., All rights reserved.},
+language = {eng},
+author = {Williams, Ronald J},
+keywords = {connectionist networks ; gradient descent ; mathematical analysis ; Reinforcement learning},
+issn = {0885-6125},
+}
+
+
